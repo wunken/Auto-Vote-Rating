@@ -6,11 +6,13 @@ if (typeof loaded2 === 'undefined') {
 }
 
 async function vote(first) {
-    if (document.querySelector('#voteform #voteButton').disabled) {
+    const voteButtonCheck = document.querySelector('#voteform #voteButton')
+    if (voteButtonCheck && voteButtonCheck.disabled) {
         await new Promise(resolve => {
             const timer = setInterval(()=>{
                 try {
-                    if (!document.querySelector('#voteform #voteButton').disabled) {
+                    const button = document.querySelector('#voteform #voteButton')
+                    if (button && !button.disabled) {
                         clearInterval(timer)
                         resolve()
                     }
@@ -25,8 +27,29 @@ async function vote(first) {
     if (first === false) return
 
     const project = await getProject()
-    document.querySelector('#voteform #ignn').value = project.nick
-    document.querySelector('#voteform #voteButton').click()
+    const nicknameField = document.querySelector('#voteform #ignnn')
+    if (nicknameField != null) {
+        nicknameField.value = project.nick
+    } else {
+        console.warn('Could not find nickname field (#voteform #ignn), possibly the site structure has changed')
+        // Try alternative selectors that might work
+        const altField = document.querySelector('input[name="ignn"]') || document.querySelector('input[name="ignnn"]') || document.querySelector('input[name="nick"]') || document.querySelector('input[name="username"]')
+        if (altField != null) {
+            altField.value = project.nick
+            console.log('Found alternative nickname field:', altField)
+        } else {
+            throwError(new Error('Error! It seems that some necessary element (nickname input field) is missing. The website structure may have changed.'))
+            return
+        }
+    }
+    
+    const voteButton = document.querySelector('#voteform #voteButton')
+    if (voteButton != null) {
+        voteButton.click()
+    } else {
+        throwError(new Error('Error! It seems that some necessary element (vote button) is missing. The website structure may have changed.'))
+        return
+    }
 }
 
 function runVote() {
