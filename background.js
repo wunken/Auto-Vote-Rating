@@ -6,32 +6,32 @@ importScripts('libs/idb.umd.js')
 importScripts('projects.js')
 importScripts('main.js')
 
-// TODO отложенный importScripts пока не работают, подробнее https://bugs.chromium.org/p/chromium/issues/detail?id=1198822
+// TODO deferred importScripts don't work yet, details https://bugs.chromium.org/p/chromium/issues/detail?id=1198822
 self.addEventListener('install', () => {
     importScripts('libs/linkedom.js')
     importScripts('scripts/mcserver-list.eu_silentvote.js', 'scripts/misterlauncher.org_silentvote.js', 'scripts/serverpact.com_silentvote.js', 'scripts/genshindrop.com_silentvote.js')
 })
 
-//Текущие fetch запросы
+//Current fetch requests
 // noinspection ES6ConvertVarToLetConst
 // var fetchProjects = new Map()
-//ID группы вкладок в которой сейчас открыты вкладки расширения
+//ID of the tab group in which extension tabs are currently open
 let groupId
-//Если этот браузер не поддерживает группировку вкладок
+//If this browser doesn't support tab grouping
 let notSupportedGroupTabs = false
 
-//Нужно ли сейчас делать проверку голосования, false может быть только лишь тогда когда предыдущая проверка ещё не завершилась
+//Whether voting check should be done now, false can only be when the previous check hasn't finished yet
 let check = true
 let doubleCheck = false
 
 let silentResponseBody = {}
 
-//Инициализация настроек расширения
+//Extension settings initialization
 // noinspection JSIgnoredPromiseFromCall
 const initializeFunc = initializeConfig(true)
 initializeFunc.finally(() => initializeFunc.done = true)
 
-//Проверка: нужно ли голосовать, сверяет время текущее с временем из конфига
+//Check: whether voting is needed, compares current time with time from config
 async function checkVote() {
 
     await initializeFunc
@@ -41,7 +41,7 @@ async function checkVote() {
         return
     }
 
-    //Если после попытки голосования не было интернета, проверяется есть ли сейчас интернет и если его нет то не допускает последующую проверку но есои наоборот появился интернет, устаналвивает статус online на true и пропускает код дальше
+    //If there was no internet after the voting attempt, check if there is internet now and if not, prevent subsequent checks, but if internet appears, set online status to true and let the code continue
     if (!settings.disabledCheckInternet && !onLine) {
         if (navigator.onLine) {
             console.log(chrome.i18n.getMessage('internetRestored'))
@@ -77,7 +77,7 @@ async function checkVote() {
         doubleCheck = false
         checkVote()
     } else {
-        // Голосование завершилось и более не планируется
+        // Voting is completed and no longer planned
         if (!openedProjects.size) {
             promises = []
             updateListeners(false)
@@ -85,14 +85,14 @@ async function checkVote() {
     }
 }
 
-//Триггер на голосование когда подходит время голосования
+//Trigger for voting when voting time comes
 chrome.alarms.onAlarm.addListener(function (alarm) {
     if (settings?.debug) console.log('chrome.alarms.onAlarm', JSON.stringify(alarm))
     // noinspection JSIgnoredPromiseFromCall
     checkVote()
 })
 
-// TODO костыльное решение бага https://bugs.chromium.org/p/chromium/issues/detail?id=471524
+// TODO workaround solution for bug https://bugs.chromium.org/p/chromium/issues/detail?id=471524
 chrome.idle.onStateChanged.addListener(async function(newState) {
     if (newState === 'active') {
         // noinspection JSIgnoredPromiseFromCall
@@ -112,7 +112,7 @@ async function reloadAllAlarms() {
             try {
                 chrome.alarms.create(String(cursor.key), {when})
             } catch (error) {
-                console.warn(getProjectPrefix(project, true), 'Ошибка при создании chrome.alarms', error.message)
+                console.warn(getProjectPrefix(project, true), 'Error creating chrome.alarms', error.message)
             }
             times.push(project.time)
         }

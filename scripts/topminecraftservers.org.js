@@ -18,7 +18,7 @@ async function vote(first) {
             chrome.runtime.sendMessage({message: document.querySelector('div.row > div.col-md-4 > button').textContent})
         }
     } else {
-        //Ожидание загрузки reCATPCHA
+        //Waiting for reCAPTCHA to load
         const timer = setInterval(async ()=>{
             try {
                 if (document.querySelector('input[name="t"]') != null && document.querySelector('input[name="t"]').value !== '') {

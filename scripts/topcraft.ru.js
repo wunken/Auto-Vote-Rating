@@ -1,7 +1,7 @@
 async function vote(first) {
     if (document.getElementById('summary') != null) {
         if (document.getElementById('summary').textContent.includes('Ошибка проверки CSRF')) {
-            //Костыль костыля, перезагружаем страницу в случае возникновения Ошибки проверки CSRF (данная ошибка выскакивает после прохождения проверки CloudFlare)
+            //Workaround for workaround, reload the page in case of CSRF verification error (this error appears after passing CloudFlare verification)
             document.location.replace(document.URL)
             return
         } else if (document.querySelector('#summary > h1') != null && document.querySelector('#summary > p') != null) {
@@ -26,7 +26,7 @@ async function vote(first) {
     const verifyUUID = crypto.randomUUID()
     window.portIsTrusted.dataset.avrId = verifyUUID
 
-    //Авторизованы ли мы в аккаунте?
+    //Are we authorized in the account?
     if (!document.querySelector('#userLoginWrap').classList.contains('hidden')) {
         window.portIsTrusted.dataset.ITtype = 'click'
         document.querySelector('.voteBtn').dispatchEvent(new CustomEvent('mousedown', {detail: {avrId: verifyUUID, eventName: 'MouseEvent', eventType: 'mousedown', isTrusted: true, detail: 1}}))
@@ -49,7 +49,7 @@ async function vote(first) {
 let fixTimer
 const timer = setInterval(()=>{
     try {
-        //Ищет надпись в которой написано что вы проголосовали или вы уже голосовали, по этой надписи скрипт завершается
+        //Looks for text that says you voted or you already voted, the script ends based on this text
         if (document.readyState === 'complete' && document.querySelectorAll('div[class=tooltip-inner]').item(0) != null) {
             const textContent = document.querySelectorAll('div[class=tooltip-inner]').item(0).textContent.toLowerCase()
             if (
@@ -93,7 +93,7 @@ const timer = setInterval(()=>{
     }
 }, 1000)
 
-//Фикс-костыль на случай если у нас ошибка в vote запросе
+//Fix-workaround in case we have an error in the vote request
 const observer = new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
         if (entry.name === 'https://topcraft.club/projects/vote/') {

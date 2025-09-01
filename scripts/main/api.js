@@ -1,7 +1,7 @@
 let resolveProject, waitProject
 if (!waitProject) waitProject = new Promise(resolve => resolveProject = resolve)
 
-//Фикс-костыль двойной загрузки (для Rocket Loader)
+//Fix-workaround for double loading (for Rocket Loader)
 if (!window.loaded) {
     window.loaded = true
     // noinspection JSIgnoredPromiseFromCall
@@ -33,7 +33,7 @@ async function run() {
         return
     }
 
-    // Интеграция с расширениями на автоматические решение капч
+    // Integration with extensions for automatic captcha solving
     const timer1 = setInterval(()=> {
         // 2 Captcha
         if (document.querySelector('.captcha-solver[data-state="solved"]')) {
@@ -68,7 +68,7 @@ async function checkAll(first) {
         return
     }
 
-    //Если мы находимся на странице авторизации Steam
+    //If we are on the Steam authorization page
     if (document.URL.startsWith('https://steamcommunity.com/openid/login')) {
         if (document.getElementById('imageLogin')) {
             document.getElementById('imageLogin').click()
@@ -102,9 +102,9 @@ async function checkAll(first) {
         return
     }
 
-    //Если мы находися на странице авторизации ВКонтакте
+    //If we are on the VKontakte authorization page
     if (document.URL.match(/vk.com\/*/)) {
-        // TODO нужно полностью переписать тут всю логику под новую версию интерфейса ВК
+        // TODO need to completely rewrite all the logic here for the new VK interface version
 
         // https://cdn.discordapp.com/attachments/1072161816693710868/1072172021473095700/image.png
         const timer7 = setInterval(() => {
@@ -154,12 +154,12 @@ async function checkAll(first) {
         return
     }
 
-    //Если мы находися на странице авторизации Дискорд
+    //If we are on the Discord authorization page
     if (document.URL.match(/discord.com\/*/)) {
         let replaced = false
         if (document.location.search.includes('%20guilds.join') || document.location.search.includes('%20guilds') || document.location.search.includes('+guilds.join') || document.location.search.includes('+guilds') || document.location.search.includes('%20email') || document.location.search.includes('+email') || !document.location.search.includes('prompt=none')) {
             let url = document.URL
-            //Пилюля от жадности в правах
+            //Pill against greed in permissions
             if (!document.location.search.includes('client_id=477949690848083968')) { // discordbotlist.com
                 if (document.location.search.includes('%20guilds.join')) {
                     url = url.replace('%20guilds.join', '')
@@ -186,7 +186,7 @@ async function checkAll(first) {
                     replaced = true
                 }
             }
-            //Заставляем авторизацию авторизоваться не беспокоя пользователя если права уже были предоставлены
+            //Force authorization to authorize without bothering the user if permissions have already been granted
             if (!document.location.search.includes('prompt=none')) {
                 url = url.concat('&prompt=none')
                 replaced = true
@@ -194,7 +194,7 @@ async function checkAll(first) {
             if (replaced) document.location.replace(url)
         }
         if (!replaced) {
-            const timer4 = setTimeout(()=>{//Да это костыль, а есть вариант по лучше?
+            const timer4 = setTimeout(()=>{//Yes this is a workaround, is there a better option?
                 chrome.runtime.sendMessage({discordLogIn: true})
             }, 10000)
             window.onbeforeunload = ()=> clearTimeout(timer4)
@@ -203,9 +203,9 @@ async function checkAll(first) {
         return
     }
 
-    //Если идёт проверка (новый CloudFlare?)
+    //If verification is in progress (new CloudFlare?)
     if (document.querySelector('#challenge-form') || document.querySelector('#challenge-body-text')) {
-        //Если нам требуется нажать на "Verify you are human" https://gyazo.com/56426c80a3072e5b4d565949af7da81b
+        //If we need to click on "Verify you are human" https://gyazo.com/56426c80a3072e5b4d565949af7da81b
         const timer5 = setInterval(()=>{
             if (document.querySelector('#cf-norobot-container input[type="button"]')) {
                 clearInterval(timer5)
@@ -218,14 +218,14 @@ async function checkAll(first) {
         return
     }
 
-    //Если мы находимся на странице проверки CloudFlare https://i.imgur.com/BVk3z6y.png
-    // TODO CloudFlare выдаёт пустую страницу и сообщает браузеру типо всё загружено. Всё что там известно это то что указано в селекторе ниже, возможны конфликты с сайтами (мониторингами)
+    //If we are on the CloudFlare verification page https://i.imgur.com/BVk3z6y.png
+    // TODO CloudFlare gives an empty page and tells the browser that everything is loaded. All that is known there is what is indicated in the selector below, conflicts with sites (monitoring) are possible
     if (document.querySelector('div.main-wrapper > div.main-content')) {
     // if (document.querySelector('div.main-wrapper div.main-content #challenge-body-text') || document.querySelector('div.main-wrapper div.main-content #challenge-running') || document.querySelector('div.main-wrapper div.main-content #challenge-success')) {
         return
     }
 
-    // Если ошибка 5xx https://i.imgur.com/aO5H1k8.png
+    // If 5xx error https://i.imgur.com/aO5H1k8.png
     if (document.querySelector('div#cf-wrapper div#cf-error-details h1') && document.querySelector('div#cf-wrapper div#cf-error-details > div > div.clearfix')) {
         const request = {}
         request.message = document.querySelector('div#cf-wrapper div#cf-error-details h1')?.innerText + ' ' + document.querySelector('div#cf-wrapper div#cf-error-details > div > div.clearfix').innerText
@@ -234,7 +234,7 @@ async function checkAll(first) {
         return
     }
 
-    // Если ошибка (запрещён доступ) CloudFlare https://i.imgur.com/u3kPXYL.png (или любая другая ошибка, не за что там сделать querySelector)
+    // If error (access denied) CloudFlare https://i.imgur.com/u3kPXYL.png (or any other error, nothing to make querySelector for)
     if (document.querySelector('div#cf-wrapper #cf-error-details')) {
         const request = {}
         request.message = document.querySelector('div#cf-wrapper #cf-error-details').innerText
@@ -264,12 +264,12 @@ async function checkAll(first) {
         return
     }
 
-    //Если мы находимся на странице проверки ReCaptcha
+    //If we are on the ReCaptcha verification page
     if (document.querySelector('body > iframe') && document.querySelector('body > iframe').src.startsWith('https://geo.captcha-delivery.com/captcha/')) {
         return
     }
 
-    //Совместимость с jQuery
+    //jQuery compatibility
     for (const script of document.querySelectorAll('script')) {
         if (script.src.toLowerCase().includes('jquery')) {
             await new Promise(resolve => {
@@ -291,7 +291,7 @@ async function checkAll(first) {
 }
 
 async function startVote(first) {
-    // ыыы костыли? вроде не всегда второй скрипт вовремя загружается
+    // uh workarounds? seems like the second script doesn't always load on time
     if (typeof vote !== 'function') {
         await new Promise(resolve => {
             const timer3 = setInterval(()=> {
@@ -388,7 +388,7 @@ function isVisibleElement(elem) {
 }
 
 function isUsedTranslator() {
-    // Если пользователь использовал переводчик
+    // If the user used a translator
     if (
         // Google
         document.querySelector('html')?.classList.contains('translated-ltr') || document.querySelector('html > body > #goog-gt-tt')
@@ -401,6 +401,6 @@ function isUsedTranslator() {
     return false
 }
 
-// TODO возвращаем хоть какой-то результат в background при executeScript во избежании ошибки "Could not establish connection. Receiving end does not exist"
+// TODO return at least some result to background on executeScript to avoid "Could not establish connection. Receiving end does not exist" error
 // noinspection BadExpressionStatementJS
 true

@@ -43,7 +43,7 @@ async function vote(first) {
     if (document.querySelector('#submit_vote_form > input[name="mcname"]') != null) {
         document.querySelector('#submit_vote_form > input[name="mcname"]').value = project.nick
     } else {
-        console.warn('Не удалось найти поле для никнейма, возможно это голосование без награды')
+        console.warn('Could not find nickname field, possibly this is voting without reward')
     }
     document.querySelector('#submit_vote_form > input[type="submit"]').click()
 }

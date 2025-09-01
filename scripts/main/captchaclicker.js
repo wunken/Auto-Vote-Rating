@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener(function(request/*, sender, sendResponse*/)
                 window.dontSolve = true
             }
             run()
-        // на случай если капча была решена раньше чем страница загрузилась
+        // in case the captcha was solved before the page loaded
         } else if (window.solvedCaptcha) {
             chrome.runtime.sendMessage({captchaPassed: 'double'})
         }
@@ -33,16 +33,16 @@ function run() {
             if (document.querySelector('#recaptcha-anchor > div.recaptcha-checkbox-border') != null
                 && isScrolledIntoView(document.querySelector('#recaptcha-anchor > div.recaptcha-checkbox-border'))
                 && document.querySelector('#recaptcha-anchor > div.recaptcha-checkbox-border').style.display !== 'none') {
-                //Если в капче есть какая-либо ошибка, то капчу не стоит проходить
+                //If there is any error in the captcha, then the captcha should not be passed
                 if (document.querySelector('.rc-anchor-error-msg-container').style.display !== 'none' && document.querySelector('.rc-anchor-error-msg-container').textContent.length > 0) return
                 document.querySelector('#recaptcha-anchor > div.recaptcha-checkbox-border').click()
                 clearInterval(timer1)
             }
         }, 1000)
 
-        //Проверяет прошла ли проверка ReCaptcha
+        //Checks if ReCaptcha verification passed
         const timer2 = setInterval(()=>{
-            //Если капча пройдена
+            //If captcha is passed
             if (document.getElementsByClassName('recaptcha-checkbox-checked').length >= 1 || (document.getElementById('g-recaptcha-response') != null && document.getElementById('g-recaptcha-response').value.length > 0)) {
                 clearInterval(timer2)
                 window.solvedCaptcha = true
@@ -63,7 +63,7 @@ function run() {
             }
         }, 1000)
     } else if ((window.location.href.match(/https?:\/\/(.+?\.)?google.com\/recaptcha\/api\d\/bframe/) || window.location.href.match(/https?:\/\/(.+?\.)?recaptcha.net\/recaptcha\/api\d\/bframe/) || window.location.href.match(/https?:\/\/(.+?\.)?google.com\/recaptcha\/enterprise\/bframe*/) || window.location.href.match(/https?:\/\/(.+?\.)?recaptcha.net\/recaptcha\/enterprise\/bframe*/)) && document.querySelector('head > yandex-captcha-solver') == null) {
-        //Интеграция с расширением Buster: Captcha Solver for Humans
+        //Integration with Buster: Captcha Solver for Humans extension
         let count = 0
         let repeat = 2
         const timer7 = setInterval(() => {
@@ -87,7 +87,7 @@ function run() {
                 clearInterval(timer7)
             }
 
-            // TODO костыльное временное решение нажатие на кнопку "Verify" для расширения NopeCHA методом решения капчи "Speech", подробнее https://github.com/NopeCHALLC/nopecha-extension/issues/11
+            // TODO workaround temporary solution clicking "Verify" button for NopeCHA extension using "Speech" captcha solving method, details https://github.com/NopeCHALLC/nopecha-extension/issues/11
             if (document.querySelector("#audio-response")?.value.length > 3) {
                 clearInterval(timer7)
                 document.querySelector("#recaptcha-verify-button")?.click()
@@ -95,7 +95,7 @@ function run() {
         }, 2000)
 
         const timer3 = setInterval(() => {
-            //Если требуется ручное прохождение капчи
+            //If manual captcha solving is required
             if (document.getElementById("solver-button") == null && document.getElementById("rc-imageselect") != null && isScrolledIntoView(document.getElementById("rc-imageselect"))) {
                 chrome.runtime.sendMessage({captcha: true})
                 clearInterval(timer3)
@@ -119,7 +119,7 @@ function run() {
             }
         }, 1000)
 
-        //Проверяет прошла ли проверка hCaptcha
+        //Checks if hCaptcha verification passed
         const timer5 = setInterval(()=>{
             if (document.getElementById('checkbox') != null && document.getElementById('checkbox').getAttribute('aria-checked') === 'true') {
                 clearInterval(timer5)
@@ -128,7 +128,7 @@ function run() {
             }
         }, 1000)
 
-        //Если требуется ручное прохождение капчи
+        //If manual captcha solving is required
         const timer6 = setInterval(()=>{
             if (document.querySelector('body[class="no-selection"]') != null && document.querySelector('body[class="no-selection"]').getAttribute('aria-hidden') == null && document.querySelector('body[class="no-selection"]').style.display === '' && document.querySelector('head > yandex-captcha-solver') == null) {
                 clearInterval(timer6)
@@ -139,7 +139,7 @@ function run() {
             }
         }, 1000)
 
-        // Если ошибка в капче https://i.imgur.com/EqEJoMr.png
+        // If error in captcha https://i.imgur.com/EqEJoMr.png
         const timer9 = setInterval(() => {
             const status = document.querySelector('#status')
             if (status && status.style.display !== 'none' && status.innerText.length > 3) {
@@ -149,7 +149,7 @@ function run() {
         }, 1000)
     } else if (window.location.href.match(/https:\/\/challenges.cloudflare.com\/*/)) {
         const body = chrome.dom.openOrClosedShadowRoot(document.body)
-        //Если требуется ручное прохождение капчи CloudFlare
+        //If manual CloudFlare captcha solving is required
         const timer7 = setInterval(()=> {
             if (body.querySelector('#cf-norobot-container')) {
                 clearInterval(timer7)
@@ -160,7 +160,7 @@ function run() {
             }
         }, 1000)
 
-        // Если мы прошли капчу CloudFlare
+        // If we passed CloudFlare captcha
         const timer8 = setInterval(() => {
             if (body.querySelector('#success') && body.querySelector('#success').style.display !== 'none') {
                 clearInterval(timer8)
@@ -183,6 +183,6 @@ function isScrolledIntoView(el) {
     return isVisible
 }
 
-// TODO возвращаем хоть какой-то результат в background при executeScript во избежании ошибки "Could not establish connection. Receiving end does not exist"
+// TODO return at least some result to background on executeScript to avoid "Could not establish connection. Receiving end does not exist" error
 // noinspection BadExpressionStatementJS
 true

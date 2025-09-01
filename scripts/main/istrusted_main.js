@@ -16,7 +16,7 @@
                         if (ITLastEvent && !port.dataset.ITtype) ITLastEvent = null
 
                         const detail = args?.[0]?.detail
-                        // извращённый, но безопасный метод
+                        // perverted, but safe method
                         if (detail?.avrId && port.dataset?.avrId && detail.avrId === port.dataset.avrId) {
                             const event = new self[detail.eventName](detail.eventType)
                             args[0] = new Proxy(event, {
@@ -44,12 +44,12 @@
                                     if (port.dataset[port.dataset?.avrId + prop] != null) {
                                         return port.dataset[prop]
                                     }
-                                    // TODO ошибка Illegal invocation, хз почему
+                                    // TODO Illegal invocation error, don't know why
                                     // return Reflect.get(...arguments)
                                     return value
                                 },
                             })
-                        // более простой, но менее безопасный метод
+                        // simpler, but less secure method
                         } else if (args[0].type === port.dataset.ITtype) {
                             if (!ITLastEvent) {
                                 ITLastEvent = args[0]
@@ -68,7 +68,7 @@
                                     if (prop === 'isTrusted') {
                                         return true
                                     }
-                                    // TODO ошибка Illegal invocation, хз почему
+                                    // TODO Illegal invocation error, don't know why
                                     // return Reflect.get(...arguments)
                                     return value
                                 },
@@ -96,7 +96,7 @@
         //     }
         // })
 
-        // TODO наверно в этом нет смысла, мы можем сами модифицировать такое небезопасное объявление слушателя
+        // TODO probably there's no point in this, we can modify such an unsafe listener declaration ourselves
         // const set = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'onclick').set
         // Object.defineProperty(HTMLElement.prototype, 'onclick', {
         //     set() {

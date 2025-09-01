@@ -15,7 +15,7 @@ async function vote(first) {
         })
     }
 
-    //Костыльный фикс на костыльные какие-то popup которые грузятся костыльно
+    //Workaround fix for some workaround popups that load in a workaround way
     if (document.querySelector('.site-body > script')?.nextElementSibling.tagName === 'SCRIPT') {
         const script = document.querySelector('.site-body > script')?.nextElementSibling.textContent.toLowerCase()
         if (script.includes('popupvoted();') && script.includes('you voted') && script.includes('thank you')) {
@@ -59,7 +59,7 @@ async function vote(first) {
         chrome.runtime.sendMessage({message: document.querySelector('.site-body .text-center')?.textContent.trim(), ignoreReport: true, retryCoolDown: 21600000})
     }
 
-    //Костыль, reCAPTCHA загружается только после scroll, странно, да?
+    //Workaround, reCAPTCHA loads only after scroll, strange, right?
     document.querySelector('#username').scrollIntoView({block: 'center'})
     window.scrollTo(window.scrollX, window.scrollY + 16)
     document.dispatchEvent(new Event('scroll'))
