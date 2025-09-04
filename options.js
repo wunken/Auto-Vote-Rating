@@ -23,7 +23,7 @@ svgFail.src = 'images/icons/error.svg'
 const svgSuccess = document.createElement('img')
 svgSuccess.src = 'images/icons/success.svg'
 
-//Локализация
+// Localization
 const elements = document.querySelectorAll('[data-resource]')
 elements.forEach(function(el) {
     el.prepend(chrome.i18n.getMessage(el.getAttribute('data-resource')))
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async()=>{
 
     document.querySelector('div[data-resource="version"]').textContent+= chrome.runtime.getManifest().version
 
-    //Для FireFox почему-то не доступно это API
+    // For FireFox this API is not available for some reason
     // noinspection JSUnresolvedVariable
     if (typeof InstallTrigger === 'undefined') {
         if (chrome.notifications.getPermissionLevel != null) {
@@ -226,7 +226,7 @@ window.addEventListener('load', async () => {
 
 // Restores select box and checkbox state using the preferences
 async function restoreOptions(first) {
-    //Считывает настройки расширение и выдаёт их в html
+    // Reads extension settings and outputs them to HTML
     document.getElementById('disabledNotifStart').checked = settings.disabledNotifStart
     document.getElementById('disabledNotifInfo').checked = settings.disabledNotifInfo
     document.getElementById('disabledNotifWarn').checked = settings.disabledNotifWarn
@@ -254,7 +254,7 @@ async function restoreOptions(first) {
     }
 }
 
-//Добавить проект в список проекта
+// Add project to project list
 async function addProjectList(project, preBend) {
     if (!document.querySelector('[data-rating-button="' + project.rating + '"]')) {
         generateBtnListRating(project.rating, 0)
@@ -382,14 +382,14 @@ async function addProjectList(project, preBend) {
 
     await updateProjectText(project)
 
-    //Слушатель кнопки "Удалить" на проект
+    // Delete button listener for project
     img2.addEventListener('click', async (event) => {
         if (event.target.disabled) return
         event.target.disabled = true
         await removeProjectList(project, false, event)
         event.target.disabled = false
     })
-    //Слушатель кнопка "Перезапустить голосование" на проект
+    // Restart voting button listener for project
     img0.addEventListener('click', async (event) => {
         if (event.target.disabled) return
         event.target.disabled = true
@@ -427,9 +427,9 @@ async function addProjectList(project, preBend) {
         }
         createNotif(chrome.i18n.getMessage('restarted'), 'success')
     })
-    //Слушатель кнопки Статистики и вывод её в модалку
+    // Listener for the Statistics button and output it to the modal
     img1.addEventListener('click', () => updateModalStats(project, true))
-    //Слушатель кнопки "Редактировать"
+    // Edit button listener
     if (settings.expertMode) {
         img3.addEventListener('click', async () => {
             project = await db.get('projects', project.key)
@@ -529,7 +529,7 @@ function generateBtnListRating(rating, count) {
     }
 }
 
-//Удалить проект из списка проекта
+// Remove a project from the project list
 async function removeProjectList(project, editing, event) {
     if (!editing && editingProject?.key === project.key) resetEdit()
 
@@ -571,7 +571,7 @@ async function removeProjectList(project, editing, event) {
     return true
 }
 
-//Перезагрузка списка проектов
+// Reload project list
 async function reloadProjectList() {
     document.querySelector('.projectsBlock .buttonBlock').replaceChildren()
     document.querySelector('.projectsBlock .contentBlock').replaceChildren()
@@ -587,7 +587,7 @@ async function reloadProjectList() {
     }
 }
 
-//Слушатель дополнительных настроек
+// Additional settings listener
 for (const check of document.querySelectorAll('input[name=checkbox]')) {
     check.addEventListener('change', async function (event) {
         event.target.disabled = true
@@ -670,7 +670,7 @@ for (const check of document.querySelectorAll('input[name=checkbox]')) {
     })
 }
 
-//Слушатели дополнительных параметров в добавлении нового проекта
+// Additional parameters listeners in adding a new project
 document.getElementById('disableCheckProjects').addEventListener('change', function() {
     if (this.checked && !confirm(chrome.i18n.getMessage('confirmDisableCheckProjects'))) {
         this.checked = false
@@ -740,7 +740,7 @@ document.getElementById('voteMode').addEventListener('change', function() {
     }
 })
 
-//Слушатель на переключение ручного режима в добавлении
+// Manual mode switch listener for adding
 document.getElementById('switchAddMode').addEventListener('change', function(event) {
     if (event.target.checked) {
         linkChanged(null, true)
@@ -926,7 +926,7 @@ function editProject(project, switchToEdit) {
     document.querySelector('.editSubtitle').textContent = text
 }
 
-//Слушатель кнопки "Добавить"
+// Add button listener
 document.getElementById('append').addEventListener('submit', async(event)=>{
     event.preventDefault()
     event.submitter.disabled = true
@@ -1187,7 +1187,7 @@ document.getElementById('append').addEventListener('submit', async(event)=>{
     event.submitter.disabled = false
 })
 
-//Слушатель кнопки "Установить" на таймауте
+// Set button listener for timeout
 document.getElementById('timeout').addEventListener('submit', async (event)=>{
     event.preventDefault()
     event.submitter.disabled = true
@@ -1198,7 +1198,7 @@ document.getElementById('timeout').addEventListener('submit', async (event)=>{
     event.submitter.disabled = false
 })
 
-//Слушатель кнопки "Установить" на таймауте при ошибке
+// Set button listener for timeout on error
 document.getElementById('timeoutError').addEventListener('submit', async (event)=>{
     event.preventDefault()
     event.submitter.disabled = true
@@ -1209,7 +1209,7 @@ document.getElementById('timeoutError').addEventListener('submit', async (event)
     event.submitter.disabled = false
 })
 
-//Слушатель кнопки "Установить" на таймауте при голосовании
+// Set button listener for timeout during voting
 document.getElementById('timeoutVote').addEventListener('submit', async (event)=>{
     event.preventDefault()
     event.submitter.disabled = true
@@ -1223,7 +1223,7 @@ document.getElementById('timeoutVote').addEventListener('submit', async (event)=
 async function addProject(project, element) {
     createNotif(chrome.i18n.getMessage('adding'), 'hint', {element})
 
-    //Получение бонусов на проектах где требуется подтвердить получение бонуса
+    // Getting bonuses on projects where bonus confirmation is required
     let secondBonusText
     let secondBonusButton = document.createElement('button')
     secondBonusButton.type = 'button'
@@ -1423,7 +1423,7 @@ async function addProject(project, element) {
 
     addProjectsBonus(project, element)
 }
-//Получение бонусов на проектах где требуется подтвердить получение бонуса
+// Getting bonuses on projects where bonus confirmation is required
 function addProjectsBonus(project, element) {
 //  if (project.id == 'mythicalworld' || project.id == 5323 || project.id == 1654 || project.id == 6099) {
 //      document.getElementById('secondBonusMythicalWorld').addEventListener('click', async()=>{
@@ -1566,7 +1566,7 @@ function createMessage(text, level) {
     return span
 }
 
-//Слушатель на экспорт настроек
+// Settings export listener
 document.getElementById('file-download').addEventListener('click', async ()=>{
     createNotif(chrome.i18n.getMessage('exporting'), 'hint')
     generalStats = await db.get('other', 'generalStats')
@@ -1611,7 +1611,7 @@ document.getElementById('logs-download').addEventListener('click', async ()=>{
     createNotif(chrome.i18n.getMessage('exportingEnd'), 'success')
 })
 
-//Сколько использовано места на логи
+// How much space is used for logs
 // noinspection JSIgnoredPromiseFromCall
 usageSpace()
 async function usageSpace() {
@@ -1633,7 +1633,7 @@ async function usageSpace() {
     }
     document.getElementById('storageUsed').textContent = chrome.i18n.getMessage('storageUsed', [v.toFixed(1), unit])
 }
-//Очистка логов
+// Log clearing
 document.getElementById('logs-clear').addEventListener('click', async ()=>{
     createNotif(chrome.i18n.getMessage('clearingLogs'), 'hint')
     await dbLogs.clear('logs')
@@ -1641,7 +1641,7 @@ document.getElementById('logs-clear').addEventListener('click', async ()=>{
     createNotif(chrome.i18n.getMessage('clearedLogs'), 'success')
 })
 
-//Слушатель на импорт настроек
+// Settings import listener
 document.getElementById('file-upload').addEventListener('change', async (event)=>{
     createNotif(chrome.i18n.getMessage('importing'), 'hint')
     try {
@@ -1691,7 +1691,7 @@ document.getElementById('file-upload').addEventListener('change', async (event)=
     }
 }, false)
 
-//Достаёт все проекты указанные в URL
+// Extracts all projects specified in URL
 function getUrlProjects(element) {
     const projects = []
     let project = {}
@@ -1774,7 +1774,7 @@ function getUrlProjects(element) {
     return projects
 }
 
-//Если страница настроек была открыта сторонним проектом то, расширение переходит к быстрому добавлению проектов
+// If the settings page was opened by a third-party project, the extension proceeds to quick project addition
 async function fastAdd() {
     if (document.location.href.includes('addFastProject')) {
         toggleModal('addFastProject')
@@ -1950,7 +1950,7 @@ document.querySelector('.burger').addEventListener('click', ()=>{
     document.querySelector('nav').classList.toggle('active')
 })
 
-//Переключение между вкладками
+// Switching between tabs
 document.querySelectorAll('.tablinks').forEach((item)=> {
     item.addEventListener('click', ()=> {
         if (document.getElementById('load').style.display !== 'none') return
@@ -1983,7 +1983,7 @@ document.querySelectorAll('.tablinks').forEach((item)=> {
     })
 })
 
-//Переключение между списками добавленных проектов
+// Switching between lists of added projects
 async function listSelect(event, tabs) {
     let listcontent, selectsite
 
@@ -2019,9 +2019,9 @@ async function listSelect(event, tabs) {
     }
 }
 
-//Слушатель закрытия модалки статистики и её сброс
+// Statistics modal close listener and its reset
 document.querySelector('#stats .close').addEventListener('click', resetModalStats)
-//Сброс модалки статистики
+// Statistics modal reset
 function resetModalStats() {
     if (document.querySelector('td[data-resource="statsSuccessVotes"]').nextElementSibling.textContent !== '') {
         document.querySelector('.statsSubtitle').firstChild.remove()
@@ -2040,7 +2040,7 @@ function resetModalStats() {
 }
 
 
-//Слушатель общей статистики и вывод её в модалку
+// General statistics listener and output to modal
 document.getElementById('generalStats').addEventListener('click', async()=> {
     const store = db.transaction('other', 'readwrite').store
     generalStats = await store.get('generalStats')
@@ -2062,7 +2062,7 @@ document.getElementById('generalStats').addEventListener('click', async()=> {
     document.querySelector('td[data-resource="statsAdded"]').nextElementSibling.textContent = generalStats.added ? new Date(generalStats.added).toLocaleString().replace(',', '') : 'None'
 })
 
-//Слушатель сегодняшней статистики и вывод её в модалку
+// Today's statistics listener and output to modal
 document.getElementById('todayStats').addEventListener('click', async()=> {
     const store = db.transaction('other', 'readwrite').store
     todayStats = await store.get('todayStats')
@@ -2343,7 +2343,7 @@ function ratingChanged(event, reset) {
     }
 }
 
-//Слушатель на выбор типа timeout для Custom
+// Listener for selecting timeout type for Custom
 document.getElementById('selectTime').addEventListener('change', function() {
     document.getElementById('hour').parentElement.style.display = 'none'
     document.getElementById('hour').required = false
@@ -2566,7 +2566,7 @@ function conventPlainTextToLinks(text, element) {
     }
 }
 
-//Модалки
+// Modals
 document.querySelectorAll('#modals .modal .close').forEach((closeBtn)=> {
     closeBtn.addEventListener('click', ()=> {
         if (closeBtn.parentElement.parentElement.id === 'addFastProject') {
